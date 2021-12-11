@@ -1,6 +1,3 @@
-import java.util.LinkedList
-import java.util.PriorityQueue
-import java.util.Queue
 import java.util.concurrent.LinkedBlockingQueue
 
 fun main() {
@@ -30,49 +27,42 @@ fun main() {
         return riskLevels
     }
 
-    data class MatrixPosition(val i: Int, val j: Int) {
-        fun up() = MatrixPosition(i - 1, j)
-        fun down() = MatrixPosition(i + 1, j)
-        fun left() = MatrixPosition(i, j - 1)
-        fun right() = MatrixPosition(i, j + 1)
-    }
-
     fun dfs(matrix: List<List<Int>>, visited: MutableSet<MatrixPosition>, previous: MatrixPosition, current: MatrixPosition): Int {
         if (visited.contains(current)) return 0
         visited.add(current)
-        val previousVal = matrix[previous.i][previous.j]
-        val currentVal = matrix.getOrNull(current.i)?.getOrNull(current.j) ?: return 0
+        val previousVal = matrix[previous.row][previous.col]
+        val currentVal = matrix.getOrNull(current.row)?.getOrNull(current.col) ?: return 0
         if (currentVal == 9 || currentVal <= previousVal) return 0
-        return 1 + dfs(matrix, visited, current, current.up()) +
-            dfs(matrix, visited, current, current.down()) +
-            dfs(matrix, visited, current, current.left()) +
-            dfs(matrix, visited, current, current.right())
+        return 1 + dfs(matrix, visited, current, current.north()) +
+            dfs(matrix, visited, current, current.south()) +
+            dfs(matrix, visited, current, current.west()) +
+            dfs(matrix, visited, current, current.east())
     }
 
     fun getSizeOfBasin(matrix: List<List<Int>>, start: MatrixPosition): Int {
-        if (matrix[start.i][start.j] == 9) return 0
+        if (matrix[start.row][start.col] == 9) return 0
         val queue = LinkedBlockingQueue<Pair<MatrixPosition, MatrixPosition>>()
         val visited = mutableSetOf(start)
-        queue.add(Pair(start, start.up()))
-        queue.add(Pair(start, start.down()))
-        queue.add(Pair(start, start.left()))
-        queue.add(Pair(start, start.right()))
+        queue.add(Pair(start, start.north()))
+        queue.add(Pair(start, start.south()))
+        queue.add(Pair(start, start.west()))
+        queue.add(Pair(start, start.east()))
         var size = 1
         while (queue.isNotEmpty()) {
             val currentPair = queue.poll()
             val previous = currentPair.first
             val current = currentPair.second
             if (visited.contains(current)) continue
-            val previousVal = matrix[previous.i][previous.j]
-            val currentVal = matrix.getOrNull(current.i)?.getOrNull(current.j) ?: continue
+            val previousVal = matrix[previous.row][previous.col]
+            val currentVal = matrix.getOrNull(current.row)?.getOrNull(current.col) ?: continue
             if (currentVal <= previousVal) continue
             visited.add(current)
             if (currentVal == 9) continue
             size += 1
-            queue.add(Pair(current, current.up()))
-            queue.add(Pair(current, current.down()))
-            queue.add(Pair(current, current.left()))
-            queue.add(Pair(current, current.right()))
+            queue.add(Pair(current, current.north()))
+            queue.add(Pair(current, current.south()))
+            queue.add(Pair(current, current.west()))
+            queue.add(Pair(current, current.east()))
         }
         return size
     }
