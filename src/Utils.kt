@@ -13,6 +13,8 @@ fun readInput(name: String) = File("src", "$name.txt").readLines()
 fun String.md5(): String = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray())).toString(16)
 
 data class MatrixPosition(val row: Int, val col: Int) {
+    var weight = 0
+
     fun north() = MatrixPosition(row - 1, col)
     fun south() = MatrixPosition(row + 1, col)
     fun west() = MatrixPosition(row, col - 1)
