@@ -25,3 +25,14 @@ data class MatrixPosition(val row: Int, val col: Int) {
     fun southwest() = MatrixPosition(row + 1, col - 1)
     fun northwest() = MatrixPosition(row - 1, col - 1)
 }
+
+data class BinaryNode<Int>(
+    var parent: BinaryNode<Int>? = null,
+    var value: Int? = null,
+    var leftChild: BinaryNode<Int>? = null,
+    var rightChild: BinaryNode<Int>? = null,
+) {
+    override fun toString(): String {
+        return if (value != null) value.toString() else "[${leftChild?.toString() ?: ""}${rightChild?.let { ", $it" } ?: ""}]"
+    }
+}
