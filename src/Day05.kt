@@ -1,5 +1,3 @@
-data class Coordinate(val x: Int, val y: Int)
-
 fun parse(input: List<String>) =
     input.map { it.split(" -> ") }
         .map { it[0].split(",") to it[1].split(",") }

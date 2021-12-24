@@ -12,6 +12,9 @@ fun readInput(name: String) = File("src", "$name.txt").readLines()
  */
 fun String.md5(): String = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray())).toString(16)
 
+data class Coordinate(val x: Int, val y: Int)
+data class Coordinate3D(val x: Int, val y: Int, val z: Int)
+
 data class MatrixPosition(val row: Int, val col: Int) {
     var weight = 0
 
