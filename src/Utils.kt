@@ -39,3 +39,27 @@ data class BinaryNode<Int>(
         return if (value != null) value.toString() else "[${leftChild?.toString() ?: ""}${rightChild?.let { ", $it" } ?: ""}]"
     }
 }
+
+data class Range(val from: Int, val to: Int) {
+    init {
+        require(from <= to)
+    }
+    val size = (to - from) + 1L
+
+    fun intersect(other: Range): Range? {
+        if (to < other.from || other.to < from) return null
+        val sortedPoints = listOf(from, to, other.from, other.to).sorted()
+        return Range(sortedPoints[1], sortedPoints[2])
+    }
+}
+data class Cuboid(val x: Range, val y: Range, val z: Range) {
+    val size = x.size * y.size * z.size
+
+    fun intersect(other: Cuboid): Cuboid? {
+        val xIntersection = x.intersect(other.x)
+        val yIntersection = y.intersect(other.y)
+        val zIntersection = z.intersect(other.z)
+        if (listOf(xIntersection, yIntersection, zIntersection).any { it == null }) return null
+        return Cuboid(xIntersection!!, yIntersection!!, zIntersection!!)
+    }
+}
