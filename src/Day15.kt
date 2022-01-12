@@ -1,6 +1,3 @@
-import java.util.PriorityQueue
-import kotlin.math.abs
-
 fun main() {
     fun parse(input: List<String>) =
         input.map { it.map { it.digitToInt() } }
@@ -55,43 +52,6 @@ fun main() {
         return graph
     }
 
-    fun heuristic(position: MatrixPosition, goal: MatrixPosition) =
-        abs(position.col - goal.col) + abs(position.row - goal.row)
-
-    fun AStarSearch(
-        graph: MutableMap<MatrixPosition, Set<MatrixPosition>>,
-        start: MatrixPosition,
-        goal: MatrixPosition,
-        h: (MatrixPosition, MatrixPosition) -> Int
-    ): Int {
-        val gScore = mutableMapOf(
-            start to 0
-        ).withDefault { Int.MAX_VALUE }
-
-        val fScore = mutableMapOf(
-            start to h(start, goal)
-        ).withDefault { Int.MAX_VALUE }
-
-        val openSet = PriorityQueue<MatrixPosition>(compareBy { fScore[it]!! })
-        openSet.add(start)
-
-        while (openSet.isNotEmpty()) {
-            val current = openSet.poll()
-            if (current == goal) return gScore.getValue(current)
-
-            for (neighbour in graph[current]!!) {
-                val tentativeGScore = gScore.getValue(current) + neighbour.weight
-                if (tentativeGScore < gScore.getValue(neighbour)) {
-                    gScore[neighbour] = tentativeGScore
-                    fScore[neighbour] = tentativeGScore + h(neighbour, goal)
-                    if (!openSet.contains(neighbour)) openSet.add(neighbour)
-                }
-            }
-        }
-
-        return -1
-    }
-
     fun getLowestRisk(input: List<List<Int>>): Int {
         val graph = buildGraph(input)
 
@@ -100,7 +60,7 @@ fun main() {
             weight = input[this.row][this.col]
         }
 
-        return AStarSearch(graph, start, goal, ::heuristic)
+        return AStarSearch(graph, start, goal, ::manhattanDistance)
     }
 
     fun part1(input: List<String>): Int {

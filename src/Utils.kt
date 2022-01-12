@@ -1,6 +1,8 @@
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
+import java.util.PriorityQueue
+import kotlin.math.abs
 
 /**
  * Reads lines from the given input txt file.
@@ -62,4 +64,41 @@ data class Cuboid(val x: Range, val y: Range, val z: Range) {
         if (listOf(xIntersection, yIntersection, zIntersection).any { it == null }) return null
         return Cuboid(xIntersection!!, yIntersection!!, zIntersection!!)
     }
+}
+
+fun manhattanDistance(position: MatrixPosition, goal: MatrixPosition) =
+    abs(position.col - goal.col) + abs(position.row - goal.row)
+
+fun AStarSearch(
+    graph: Map<MatrixPosition, Set<MatrixPosition>>,
+    start: MatrixPosition,
+    goal: MatrixPosition,
+    h: (MatrixPosition, MatrixPosition) -> Int
+): Int {
+    val gScore = mutableMapOf(
+        start to 0
+    ).withDefault { Int.MAX_VALUE }
+
+    val fScore = mutableMapOf(
+        start to h(start, goal)
+    ).withDefault { Int.MAX_VALUE }
+
+    val openSet = PriorityQueue<MatrixPosition>(compareBy { fScore[it]!! })
+    openSet.add(start)
+
+    while (openSet.isNotEmpty()) {
+        val current = openSet.poll()
+        if (current == goal) return gScore.getValue(current)
+
+        for (neighbour in graph[current]!!) {
+            val tentativeGScore = gScore.getValue(current) + neighbour.weight
+            if (tentativeGScore < gScore.getValue(neighbour)) {
+                gScore[neighbour] = tentativeGScore
+                fScore[neighbour] = tentativeGScore + h(neighbour, goal)
+                if (!openSet.contains(neighbour)) openSet.add(neighbour)
+            }
+        }
+    }
+
+    return -1
 }
